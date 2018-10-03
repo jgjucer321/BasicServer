@@ -25,17 +25,12 @@ public class BasicServer {
 			e.printStackTrace();
 		}
 		*/
+		DirListener dl = null;
 		if(args.length > 0) {
 			File file = new File(args[0]);
 			
-			try {
-				DirListener.watchForChanges(file);
-				
-			}
-			catch(IOException e) {
-			e.printStackTrace();
-			}
-			
+			dl = new DirListener(file);
+			dl.start();
 		}
 		else {
 			System.out.println("pass a directory as argument");

@@ -6,9 +6,26 @@ import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 import java.util.List;
 
-public class DirListener {
+public class DirListener extends Thread {
 
-	public static void watchForChanges(File file) throws IOException {
+	File file;
+	DirListener(File file)
+	{
+		this.file = file;
+	}
+
+	@Override
+	public void run()
+	{
+		for(;;)
+			try {
+				watchForChanges();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	public  void watchForChanges() throws IOException {
 		Path path = file.toPath();
 		if(file.isDirectory()) {
 			System.out.println(path);
@@ -30,9 +47,11 @@ public class DirListener {
 					System.out.println(extension(context.getFileName().toString()));
 					if(extension(context.getFileName().toString()).equals("apk")) {
 						System.out.println("file created. file is an apk");
+						startNewThread(context);
 					}
 					else {
 						System.out.println("file created. illegal filetype");
+						continue;
 				}
 					
 				}
@@ -47,6 +66,10 @@ public class DirListener {
 		}
 	}
 	
+	private void startNewThread(Path context) {
+		new ApkHandler(context).start();
+	}
+
 	private static String extension(String fileName) {
 		String extension = "";
 
